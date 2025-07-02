@@ -69,7 +69,8 @@ class WaveformRecorderController extends ChangeNotifier {
   bool get isPaused => !_stopwatch.isRunning;
 
   /// Indicates whether audio recording is currently in progress.
-  bool get isRecording => _audioRecorder != null;
+  // bool get isRecording => _audioRecorder != null;
+  bool get isRecording => _audioRecorder.isRecording();
 
   /// Provides a stream of amplitude data for generating the waveform.
   ///
