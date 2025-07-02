@@ -108,7 +108,7 @@ class WaveformRecorderController extends ChangeNotifier {
   ///
   /// Throws an exception if already recording.
   Future<void> startRecording() async {
-    if (_audioRecorder != null) throw Exception('Already recording');
+    // if (_audioRecorder != null) throw Exception('Already recording');
     assert(_amplitudeStream == null);
     assert(_startTime == null);
     _file = null;
