@@ -23,6 +23,7 @@ class WaveformRecorderController extends ChangeNotifier {
     this.interval = const Duration(milliseconds: 250),
     @Deprecated('Use config instead') AudioEncoder? encoder,
     RecordConfig? config,
+    AudioRecorder? audioRecorder, // <-- Add this parameter
   }) : config = RecordConfig(
           encoder: encoder ??
               config?.encoder ??
@@ -36,7 +37,9 @@ class WaveformRecorderController extends ChangeNotifier {
           noiseSuppress: config?.noiseSuppress ?? false,
           androidConfig: config?.androidConfig ?? const AndroidRecordConfig(),
           iosConfig: config?.iosConfig ?? const IosRecordConfig(),
-        );
+        ),
+   _audioRecorder = audioRecorder; // <-- Set it here
+    ;
 
   /// The interval at which amplitude data is emitted during recording.
   ///
