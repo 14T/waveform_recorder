@@ -39,7 +39,6 @@ class WaveformRecorderController extends ChangeNotifier {
           iosConfig: config?.iosConfig ?? const IosRecordConfig(),
         ),
    _audioRecorder = audioRecorder; // <-- Set it here
-    ;
 
   /// The interval at which amplitude data is emitted during recording.
   ///
