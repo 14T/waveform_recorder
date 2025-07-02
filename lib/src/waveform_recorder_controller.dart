@@ -51,6 +51,7 @@ class WaveformRecorderController extends ChangeNotifier {
 
   Stream<waveform.Amplitude>? _amplitudeStream;
   AudioRecorder? _audioRecorder;
+  AudioRecorder? get audioRecorder => _audioRecorder;
   XFile? _file;
   var _length = Duration.zero;
   DateTime? _startTime;
