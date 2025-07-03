@@ -70,7 +70,7 @@ class WaveformRecorderController extends ChangeNotifier {
 
   /// Indicates whether audio recording is currently in progress.
   // bool get isRecording => _audioRecorder != null;
-    bool get isRecording => _amplitudeStream != null;
+    var isRecording = false;
   
   // bool get isRecording => _audioRecorder?.isRecording() ?? false;
 
@@ -98,6 +98,7 @@ class WaveformRecorderController extends ChangeNotifier {
     _amplitudeStream = null;
     unawaited(_audioRecorder?.dispose());
     _audioRecorder = null;
+    isRecording = false;
     _file = null;
     _length = Duration.zero;
     _startTime = null;
@@ -116,6 +117,7 @@ class WaveformRecorderController extends ChangeNotifier {
     assert(_startTime == null);
     _file = null;
     _length = Duration.zero;
+    isRecording = true;
 
     // request permissions (needed for Android)
     // _audioRecorder = AudioRecorder();
@@ -136,7 +138,6 @@ class WaveformRecorderController extends ChangeNotifier {
           (a) => waveform.Amplitude(current: a.current, max: a.max),
         )
         .asBroadcastStream(); // allows multiple listeners
-
     notifyListeners();
   }
 
@@ -147,6 +148,8 @@ class WaveformRecorderController extends ChangeNotifier {
     if (_audioRecorder == null) throw Exception('Not recording');
     assert(_file == null);
     assert(_length == Duration.zero);
+    isRecording = false;
+
 
     final path = await _audioRecorder!.stop() ?? '';
     if (path.isNotEmpty) {
@@ -155,7 +158,8 @@ class WaveformRecorderController extends ChangeNotifier {
     }
 
     unawaited(_audioRecorder!.dispose());
-    _audioRecorder = null;
+    // _audioRecorder = null;
+    isRecording = false;
     _amplitudeStream = null;
     _startTime = null;
     _stopwatch
@@ -214,7 +218,8 @@ class WaveformRecorderController extends ChangeNotifier {
 
     // Clean up resources
     unawaited(_audioRecorder!.dispose());
-    _audioRecorder = null;
+    // _audioRecorder = null;
+    isRecording = false;
     _amplitudeStream = null;
     _startTime = null;
     _stopwatch
@@ -266,7 +271,9 @@ class WaveformRecorderController extends ChangeNotifier {
     _length = Duration.zero;
     _startTime = null;
     _amplitudeStream = null;
-    _audioRecorder = null;
+    // _audioRecorder = null;
+        isRecording = false;
+
     notifyListeners();
   }
 }
