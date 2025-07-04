@@ -63,10 +63,16 @@ class _WaveformRecorderState extends State<WaveformRecorder> {
 
   void _onRecordingChange() {
     assert(widget.onRecordingStopped != null);
+    debugPrint('[WaveformRecorder] _onRecordingChange called');
     if (!widget.controller.isRecording) {
+      debugPrint('[WaveformRecorder] Recording stopped detected');
       _timer?.cancel();
+      debugPrint('[WaveformRecorder] Timer cancelled');
       _timer = null;
       widget.onRecordingStopped?.call();
+      debugPrint('[WaveformRecorder] onRecordingStopped callback called');
+    } else {
+      debugPrint('[WaveformRecorder] Still recording');
     }
   }
 

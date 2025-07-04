@@ -124,6 +124,8 @@ class WaveformRecorderController extends ChangeNotifier {
       // request permissions (needed for Android)
       // _audioRecorder = AudioRecorder();
       // await _audioRecorder!.hasPermission();
+      isRecording = true;
+      debugPrint('[WaveformRecorderController] isRecording set to true');
 
       // start the recording into a temp file (or in memory on the web)
       _startTime = DateTime.now();
@@ -145,7 +147,6 @@ class WaveformRecorderController extends ChangeNotifier {
             (a) => waveform.Amplitude(current: a.current, max: a.max),
           )
           .asBroadcastStream(); // allows multiple listeners
-      isRecording = true;
       debugPrint('[WaveformRecorderController] Recording started successfully');
       notifyListeners();
     } catch (e, stack) {
@@ -158,24 +159,36 @@ class WaveformRecorderController extends ChangeNotifier {
   ///
   /// Throws an exception if not currently recording.
   Future<void> stopRecording() async {
-    if (_audioRecorder == null) throw Exception('Not recording');
+    debugPrint('[WaveformRecorderController] stopRecording called');
+    if (_audioRecorder == null) {
+      debugPrint('[WaveformRecorderController] Error: Not recording');
+      throw Exception('Not recording');
+    }
     assert(_file == null);
     assert(_length == Duration.zero);
 
+    debugPrint('[WaveformRecorderController] Stopping audio recorder');
     final path = await _audioRecorder!.stop() ?? '';
+    debugPrint('[WaveformRecorderController] Audio recorder stopped, path: $path');
     if (path.isNotEmpty) {
       _file = _fileFor(config.encoder, path);
       _length = _stopwatch.elapsed;
+      debugPrint('[WaveformRecorderController] File created: ${_file?.path}, length: $_length');
+    } else {
+      debugPrint('[WaveformRecorderController] No file path returned');
     }
 
     // unawaited(_audioRecorder!.dispose());
     // _audioRecorder = null;
+    isRecording = false;
+    debugPrint('[WaveformRecorderController] isRecording set to false');
+
     _amplitudeStream = null;
     _startTime = null;
     _stopwatch
       ..stop()
       ..reset();
-    isRecording = false;
+    debugPrint('[WaveformRecorderController] State cleared, notifying listeners');
     notifyListeners();
   }
 
