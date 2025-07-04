@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as ph; // path helper
 import 'package:record/record.dart';
 import 'package:waveform_flutter/waveform_flutter.dart' as waveform;
+import 'dart:typed_data';
 
 import 'platform_helper/platform_helper.dart';
 
@@ -117,7 +118,7 @@ class WaveformRecorderController extends ChangeNotifier {
     assert(_startTime == null);
     _file = null;
     _length = Duration.zero;
-    isRecording = true;
+  
 
     // request permissions (needed for Android)
     // _audioRecorder = AudioRecorder();
@@ -138,6 +139,7 @@ class WaveformRecorderController extends ChangeNotifier {
           (a) => waveform.Amplitude(current: a.current, max: a.max),
         )
         .asBroadcastStream(); // allows multiple listeners
+          isRecording = true;
     notifyListeners();
   }
 
@@ -148,8 +150,6 @@ class WaveformRecorderController extends ChangeNotifier {
     if (_audioRecorder == null) throw Exception('Not recording');
     assert(_file == null);
     assert(_length == Duration.zero);
-    isRecording = false;
-
 
     final path = await _audioRecorder!.stop() ?? '';
     if (path.isNotEmpty) {
@@ -157,15 +157,14 @@ class WaveformRecorderController extends ChangeNotifier {
       _length = _stopwatch.elapsed;
     }
 
-    unawaited(_audioRecorder!.dispose());
+    // unawaited(_audioRecorder!.dispose());
     // _audioRecorder = null;
-    isRecording = false;
     _amplitudeStream = null;
     _startTime = null;
     _stopwatch
       ..stop()
       ..reset();
-
+    isRecording = false;
     notifyListeners();
   }
 
@@ -217,7 +216,7 @@ class WaveformRecorderController extends ChangeNotifier {
     await PlatformHelper.deleteTempAudioFile(path);
 
     // Clean up resources
-    unawaited(_audioRecorder!.dispose());
+    // unawaited(_audioRecorder!.dispose());
     // _audioRecorder = null;
     isRecording = false;
     _amplitudeStream = null;
@@ -266,7 +265,7 @@ class WaveformRecorderController extends ChangeNotifier {
   /// as when it was first created, ready for a new recording.
   void clear() {
     _stopwatch.stop();
-    unawaited(_audioRecorder?.dispose());
+    // unawaited(_audioRecorder?.dispose());
     _file = null;
     _length = Duration.zero;
     _startTime = null;
