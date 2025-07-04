@@ -113,34 +113,45 @@ class WaveformRecorderController extends ChangeNotifier {
   ///
   /// Throws an exception if already recording.
   Future<void> startRecording() async {
-    // if (_audioRecorder != null) throw Exception('Already recording');
+    debugPrint('[WaveformRecorderController] startRecording called');
     assert(_amplitudeStream == null);
     assert(_startTime == null);
     _file = null;
     _length = Duration.zero;
-  
 
-    // request permissions (needed for Android)
-    // _audioRecorder = AudioRecorder();
-    // await _audioRecorder!.hasPermission();
+    try {
+      debugPrint('[WaveformRecorderController] Preparing to start recording');
+      // request permissions (needed for Android)
+      // _audioRecorder = AudioRecorder();
+      // await _audioRecorder!.hasPermission();
 
-    // start the recording into a temp file (or in memory on the web)
-    _startTime = DateTime.now();
-    _length = Duration.zero;
-    final ext = _extFor(config.encoder);
-    final path = await PlatformHelper.getTempPath(ext);
-    await _audioRecorder!.start(config, path: path);
-    _stopwatch.start();
+      // start the recording into a temp file (or in memory on the web)
+      _startTime = DateTime.now();
+      _length = Duration.zero;
+      final ext = _extFor(config.encoder);
+      debugPrint('[WaveformRecorderController] Getting temp path with extension: $ext');
+      final path = await PlatformHelper.getTempPath(ext);
+      debugPrint('[WaveformRecorderController] Temp path obtained: $path');
+      debugPrint('[WaveformRecorderController] Starting audio recorder with config: $config');
+      await _audioRecorder!.start(config, path: path);
+      debugPrint('[WaveformRecorderController] Audio recorder started');
+      _stopwatch.start();
 
-    // map the amplitude types as they stream in
-    _amplitudeStream = _audioRecorder!
-        .onAmplitudeChanged(interval)
-        .map(
-          (a) => waveform.Amplitude(current: a.current, max: a.max),
-        )
-        .asBroadcastStream(); // allows multiple listeners
-          isRecording = true;
-    notifyListeners();
+      // map the amplitude types as they stream in
+      debugPrint('[WaveformRecorderController] Setting up amplitude stream');
+      _amplitudeStream = _audioRecorder!
+          .onAmplitudeChanged(interval)
+          .map(
+            (a) => waveform.Amplitude(current: a.current, max: a.max),
+          )
+          .asBroadcastStream(); // allows multiple listeners
+      isRecording = true;
+      debugPrint('[WaveformRecorderController] Recording started successfully');
+      notifyListeners();
+    } catch (e, stack) {
+      debugPrint('[WaveformRecorderController] Error in startRecording: $e\n$stack');
+      rethrow;
+    }
   }
 
   /// Stops the current audio recording session.
